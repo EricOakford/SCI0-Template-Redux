@@ -1,0 +1,11 @@
+pic=/games/ice/pic
+view=/games/ice/view
+sound=/games/ice/sound
+patch=/games/ice/sound
+script=/games/ice/source;/games/ice/script;s:
+font=s:
+cursor=s:
+vocab=/games/ice/source;/games/ice/script;s:
+videoDrv=s:ega320.drv
+soundDrv=s:mt32.drv
+kbdDrv=s:ibmkbd.drv
