@@ -8,5 +8,5 @@
 
 (define vEgo 0)
 (define vSpeedTest 799)
-(define vTestItem 800)
+(define vTestObject 800)
 (define vDeathSkull 900)

@@ -1,6 +1,14 @@
 ;;; Sierra Script 1.0 - (do not remove this comment)
-(script# 0)
-(include game.sh)
+;
+;	MAIN.SC
+;
+;	This is the main game script. It contains the main game class, all the global variables, and
+;	a number of useful procedures.
+;
+;
+
+(script# MAIN)
+(include game.sh) (include menu.sh)
 (use Intrface)
 (use DCIcon)
 (use LoadMany)
@@ -14,22 +22,24 @@
 (use System)
 
 (public
-	SCI0 0
-	HandsOn 1
-	HandsOff 2
-	NormalEgo 3
-	cls 4
-	Btst 5
-	Bset 6
-	Bclr 7
-	SolvePuzzle 8
-	EgoDead	9
-	PrintDontHaveIt 10
-	PrintAlreadyDoneThat 11
-	PrintNotCloseEnough 12
+	SCI0 0 ;Replace "SCI0" with the game's internal name here (up to 6 characters)
+	AnimateCast 1
+	HandsOn 2
+	HandsOff 3
+	NormalEgo 4
+	cls 5
+	Btst 6
+	Bset 7
+	Bclr 8
+	SolvePuzzle 9
+	EgoDead	10
+	PrintDontHaveIt 11
+	PrintAlreadyDoneThat 12
+	PrintNotCloseEnough 13
 )
 
 (local
+	;refer to SYSTEM.SH for information on globals 0-99.
 	ego
 	theGame
 	curRoom
@@ -131,18 +141,29 @@
 		global97
 		global98
 	lastSysGlobal
-	curTextColor
-	curBackColor
-	detailLevel
-	theMusic
-	soundFx
-	musicChannels
-	colorCount
-	debugging
+	;globals 100 and above are for game use
 	isHandsOff
+	deathMusic	= sDeath	;default death music
+	musicChannels
+	global103
+	debugging	;debug mode enabled
+	detailLevel		;detail level (0 = low, 1 = mid, 2 = high, 3 = ultra)
+	theMusic			;music object, current playing music
+	colorCount
+	speedCount		;used to test how fast the system is
+					;and used in determining detail level. (used in conjunction with detailLevel)
 	cIcon
-	[gameFlags 10]
+	soundFx				;sound effect being played
+	[gameFlags 10]	;each global can have 16 flags. 10 globals * 16 flags = 160 flags. If you need more flags, just increase the array!
+	curTextColor ;color of text in message boxes
+	curBackColor ;color of message boxes
 )
+
+(procedure (AnimateCast)
+	;Used to animate the cast, generally in a room's init() method.
+	(Animate (cast elements?) FALSE)
+)
+
 (procedure (HandsOn)
 	;Enable ego control
 	(= isHandsOff FALSE)
@@ -160,6 +181,7 @@
 
 
 (procedure (NormalEgo)
+	;normalizes ego's animation
 	(ego
 		setLoop: -1
 		setPri: -1
@@ -175,7 +197,7 @@
 )
 
 (procedure (cls)
-	;Clear text from the screen
+	;Clear modeless dialog from the screen
 	(if modelessDialog (modelessDialog dispose:))
 )
 
@@ -216,7 +238,7 @@
 	(= normalCursor ARROW_CURSOR)
 	(theGame setCursor: normalCursor TRUE)
 	(soundFx stop:)
-	(music number: sDeath play:)
+	(theMusic number: deathMusic play:)
 		(repeat
 			(= printRet
 				(Print
@@ -251,8 +273,6 @@
 (procedure (PrintNotCloseEnough)
 	(Print "You're not close enough.")
 )
-
-
 
 (instance egoObj of Ego
 	(properties
@@ -289,31 +309,38 @@
 		name {Test Object}
 		description {This is a test object.}
 		owner 0
-		view vTestItem
+		view vTestObject
 		loop 0
 		cel 0
 	)
 )
 
-(instance SCI0 of Game
+(instance SCI0 of Game ;Replace "SCI01" with the game's internal name here (up to 6 characters)
+	; The main game instance. It adds game-specific functionality.
 	(properties)
 	
 	(method (init)
-		(SysWindow color: vBLACK back: vWHITE)
+		;set up various aspects of the game
+		(= debugging TRUE) ;Set to TRUE if you want to enable the debug features.
+		(SysWindow
+			;These colors can be changed to suit your preferences.
+			;They can also be changed in the game's menu, like in LSL3.
+			color: (= curTextColor vBLACK)
+			back: (= curBackColor vWHITE)
+		)
 		(= colorCount (Graph GDetect))
 		(= systemWindow SysWindow)
 		(super init:)
 		(= musicChannels (DoSound NumVoices))
+		(= useSortedFeatures TRUE)
 		(= cIcon deathIcon)
 		(= ego egoObj)
-		(= score 0)
-		(= possibleScore 0)
+		(= possibleScore 0)	;Set the maximum score here
 		(= version {x.yyy.zzz})
-		(= debugging TRUE)
 		(User alterEgo: ego)
 		(= showStyle HSHUTTER)
 		(TheMenuBar init: draw: hide:)
-		(StatusLine code: statusCode disable:)	;Don't show the status line at startup
+		(StatusLine code: statusCode disable:) ;hide the status code at startup
 		
 		(if debugging
 			(self setCursor: normalCursor (HaveMouse) 300 170)
@@ -321,24 +348,40 @@
 			(HandsOff)
 			(self setCursor: normalCursor FALSE 350 200)
 		)
+		((= theMusic music) number: sDeath owner: self init:)
+		((= soundFx SFX) number: sDeath owner: self init:)
 		(inventory add:
 			;Add your inventory items here. Make sure they are in the same order as the item list in GAME.SH.
 				Test_Object
 		)
-
-		((= soundFx SFX) init: owner: self)
-		((= theMusic music) init: owner: self)
-;		(Print "It's alive!")	;test message to show that the Game instance initialized successfully
+		;and finally, now that the game's been initialized, we can move on to the speed tester.
 		(self newRoom: SPEEDTEST)
 	)
+
+	(method (doit)
+		(super doit:)
+	)
+
+	(method (replay)
+		(TheMenuBar draw:)
+		(StatusLine enable:)
+		(SetMenu soundI p_text
+			(if (DoSound SoundOn) { Sound off} else { Sound on})
+		)
+		(super replay:)
+	)	
 	
 	(method (newRoom)
 		(super newRoom: &rest)
 	)
 	
-	(method (startRoom roomNum &tmp temp0)
-		;clean up dialog and dispose various scripts from heap
-		(LoadMany FALSE FILE JUMP EXTRA WINDOW TIMER FOLLOW REVERSE)
+	(method (startRoom roomNum)
+		(LoadMany FALSE	
+			;These are all disposed when going to another room, to reduce the
+			;chances of "Memory Fragmented" errors.
+			EXTRA FILE QSOUND GROOPER FORCOUNT SIGHT DPATH JUMP SMOOPER
+			REVERSE CHASE FOLLOW WANDER EXTRA AVOIDER TIMER QSOUND
+		)
 		(cls)
 		(if debugging
 			(if
@@ -364,10 +407,16 @@
 		)
 		(super handleEvent: event)
 		(switch (event type?)
+		;Add global parser commands here.
 			(saidEvent
 				(cond
 					((Said 'die') ;this shouldn't be in your game; it's just used to test the EgoDead procedure.
 						(EgoDead "This has beea a test of the Emergency Death Broadcast System." #title {You're dead.} #icon vDeathSkull)
+					)
+					((Said 'cheat')
+						(Print "Okay, you win.")
+						(Print "(Game over.)" #at -1 152)
+						(= quit TRUE)
 					)
 				)
 			)

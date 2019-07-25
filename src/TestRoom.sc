@@ -29,8 +29,11 @@
 				(ego posn: 146 153 loop: 1)
 			)
 		)
+		(AnimateCast)
 		(ego init:)
+		(ego get: iTestObject)
 	)
+
 	(method (handleEvent event)
 		(super handleEvent: event)
 		(switch (event type?)
@@ -49,4 +52,3 @@
 		)
 	)
 )
-
