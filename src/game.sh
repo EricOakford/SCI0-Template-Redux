@@ -9,11 +9,20 @@
 (include pics.sh) (include views.sh) ;graphical defines
 (include system.sh) (include sci2.sh) ;system and kernel functions
 
-;Script defines
-(define TITLE 1)
-(define TESTROOM 2)
-(define SPEEDTEST 99)
-(define DEBUG 800)
+;Game modules
+(enum
+	MAIN		;0
+	SPEEDTEST	;1
+	DEBUG		;2
+	GAME_INV	;3
+	GAME_INIT	;4
+)
+
+;Actual rooms
+(enum 10
+	TITLE		;10
+	TESTROOM	;11
+)
 
 ;Sound defines
 (define sTitle 1)

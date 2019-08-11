@@ -23,8 +23,6 @@ $300 actionM
    pauseI
    invI
    repeatI
-       divider301I
-   colorI
 )
 (enum
 $400 speedM

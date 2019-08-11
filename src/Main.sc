@@ -304,56 +304,31 @@
 	(properties)
 )
 
-(instance Test_Object of InvItem
-	(properties
-		name {Test Object}
-		description {This is a test object.}
-		owner 0
-		view vTestObject
-		loop 0
-		cel 0
-	)
-)
-
-(instance SCI0 of Game ;Replace "SCI01" with the game's internal name here (up to 6 characters)
+(instance SCI0 of Game ;Replace "SCI0 with the game's internal name here (up to 6 characters)
 	; The main game instance. It adds game-specific functionality.
 	(properties)
 	
 	(method (init)
 		;set up various aspects of the game
-		(= debugging TRUE) ;Set to TRUE if you want to enable the debug features.
-		(SysWindow
-			;These colors can be changed to suit your preferences.
-			;They can also be changed in the game's menu, like in LSL3.
-			color: (= curTextColor vBLACK)
-			back: (= curBackColor vWHITE)
-		)
-		(= colorCount (Graph GDetect))
-		(= systemWindow SysWindow)
 		(super init:)
-		(= musicChannels (DoSound NumVoices))
-		(= useSortedFeatures TRUE)
 		(= cIcon deathIcon)
 		(= ego egoObj)
-		(= possibleScore 0)	;Set the maximum score here
 		(= version {x.yyy.zzz})
 		(User alterEgo: ego)
-		(= showStyle HSHUTTER)
 		(TheMenuBar init: draw: hide:)
-		(StatusLine code: statusCode disable:) ;hide the status code at startup
-		
+		(StatusLine code: statusCode disable:) ;hide the status code at startup		
+		((= theMusic music) number: sDeath owner: self init:)
+		((= soundFx SFX) number: sDeath owner: self init:)
 		(if debugging
 			(self setCursor: normalCursor (HaveMouse) 300 170)
 		else
 			(HandsOff)
 			(self setCursor: normalCursor FALSE 350 200)
-		)
-		((= theMusic music) number: sDeath owner: self init:)
-		((= soundFx SFX) number: sDeath owner: self init:)
-		(inventory add:
-			;Add your inventory items here. Make sure they are in the same order as the item list in GAME.SH.
-				Test_Object
-		)
+		)					
+		;moved inventory into its own script
+		((ScriptID GAME_INV 0) init:)
+		;moved any code not requiring any objects in this script into its own script
+		((ScriptID GAME_INIT 0) init:)
 		;and finally, now that the game's been initialized, we can move on to the speed tester.
 		(self newRoom: SPEEDTEST)
 	)
@@ -366,7 +341,7 @@
 		(TheMenuBar draw:)
 		(StatusLine enable:)
 		(SetMenu soundI p_text
-			(if (DoSound SoundOn) { Sound off} else { Sound on})
+			(if (DoSound SoundOn) {Sound off} else {Sound on})
 		)
 		(super replay:)
 	)	

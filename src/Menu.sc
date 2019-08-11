@@ -38,39 +38,33 @@
 (class TheMenuBar kindof MenuBar       ;**   MENUBAR
    (method (init)
       (AddMenu { \01 }
-         { About game`^a: Help`#1}
+         {About game`^a:Help`#1}
       )
 
       (AddMenu { File }
-         { Save Game`#5: Restore Game`#7:--!
-         : Restart Game`#9: Quit`^q}
+         {Save Game`#5:Restore Game`#7:--!
+         :Restart Game`#9:Quit`^q}
       )
 
       (AddMenu { Action }
-         { Pause Game`^p: Inventory`^I: Retype`#3:--!
-         : Colors}
+         {Pause Game`^p:Inventory`^I:Retype`#3:}
 	  )
 
       (AddMenu { Speed }
-         { Change...`^s:--!: Faster`+: Normal`=: Slower`-}
+         {Change...`^s:--!:Faster`+:Normal`=:Slower`-}
       )
 
       (AddMenu { Sound }
-         { Volume...`^v: Sound Off`#2=1}
+         {Volume...`^v:Sound Off`#2=1}
       )
       (SetMenu soundI
         #text
             (if (DoSound SoundOn)
-               { Sound off}
+               {Sound off}
             else
-               { Sound on}
+               {Sound on}
             )
      )
-     (if (< (Graph GDetect) 9)
-			(SetMenu colorI 32 0)
-;		else
-;			(SetMenu colorI 109 '/color')
-	 )
 
       (SetMenu saveI       109 'save[/game]')
       (SetMenu restoreI    109 'restore[/game]')
@@ -84,7 +78,7 @@
 ;      (SetMenu teleportI   109 'tp')
    )
 
-   (method (handleEvent event &tmp i newBackColor newTextColor [str 300])
+   (method (handleEvent event &tmp i [str 300])
       (switch (super handleEvent: event (User blocks?))
 
          ;**************      SIERRA MENU    **************
@@ -174,31 +168,10 @@
          (repeatI
          	(SetInputText event)
 		 )
-		(colorI
-			(= newTextColor 16)
-			(while (and (u> newTextColor 15) (!= newTextColor -1))
-				(= newTextColor (GetNumber {New Text Color: (0-15)}))
-			)
-			(if (!= newTextColor -1)
-				(= newBackColor 16)
-				(while
-					(and
-						(!= newBackColor -1)
-						(or (u> newBackColor 15) (== newBackColor newTextColor))
-					)
-					(= newBackColor (GetNumber {New Background Color: (0-15)}))
-				)
-				(if (!= newBackColor -1)
-					(= curTextColor newTextColor)
-					(= curBackColor newBackColor)
-				)
-			)
-			(systemWindow color: curTextColor back: curBackColor)
-		)		 
 
          ;**************      SPEED MENU     ************** 
 		(speedI
-			            (= i
+			(= i
                ((Gauge new:)
                   description:
                      {Use the mouse or right and left arrow keys to
@@ -228,17 +201,22 @@
 			         ;**************      SOUND MENU     **************
 
 			(volumeI
-				(if
-					(!=
-						(= i
-							(GetNumber {Volume (1 - 16)?} (+ 1 (DoSound ChangeVolume)))
-						)
-						-1
+				(= i
+					((Gauge new:)
+						description:
+							{Use the mouse or right and left arrow keys to
+							set the sound volume.}
+						text: {Sound Volume}
+						minimum: 0
+						normal: 12
+						maximum: 15
+						higher: {Louder}
+						lower: {Softer}
+						doit:(DoSound ChangeVolume)
 					)
-					(if (< (-- i) 0) (= i 0))
-					(if (> i 15) (= i 15))
-					(DoSound ChangeVolume i)
 				)
+				(DoSound ChangeVolume i)
+				(DisposeScript GAUGE)
 			)
          (soundI
             (= i (DoSound SoundOn))

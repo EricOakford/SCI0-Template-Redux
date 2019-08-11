@@ -74,7 +74,8 @@
 							ALT-I Get InvItem\n
 							ALT-D Internal debugger\n
 							ALT-E   Show ego\n"
-							#window SysWindow)
+							#window SysWindow
+						)
 					)
 					(KEY_ALT_s
 					)
@@ -113,7 +114,6 @@
 					)
 					;Added to allow the interpreter's internal debugger
 					;to be accessed with a simpler key combo
-					
 					(else
 						(event claimed: FALSE)
 					)
