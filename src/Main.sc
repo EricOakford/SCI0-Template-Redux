@@ -36,6 +36,8 @@
 	PrintDontHaveIt 11
 	PrintAlreadyDoneThat 12
 	PrintNotCloseEnough 13
+	PrintCantDoThat 14
+	PrintCantSeeThat 15
 )
 
 (local
@@ -274,6 +276,14 @@
 	(Print "You're not close enough.")
 )
 
+(procedure (PrintCantDoThat)
+	(Print "You can't do that now.")
+)
+
+(procedure (PrintCantSeeThat)
+	(Print "You see nothing like that here.")
+)
+
 (instance egoObj of Ego
 	(properties
 		name "ego"
@@ -324,9 +334,11 @@
 		else
 			(HandsOff)
 			(self setCursor: normalCursor FALSE 350 200)
-		)					
-		;moved inventory into its own script
-		((ScriptID GAME_INV 0) init:)
+		)			
+		(inventory add:
+			;Add your inventory items here. Make sure they are in the same order as the item list in GAME.SH.
+				Test_Object
+		)
 		;moved any code not requiring any objects in this script into its own script
 		((ScriptID GAME_INIT 0) init:)
 		;and finally, now that the game's been initialized, we can move on to the speed tester.
@@ -376,7 +388,7 @@
 		(super startRoom: roomNum)
 	)
 	
-	(method (handleEvent event)
+	(method (handleEvent event &tmp item)
 		(if (event claimed?)
 			(return)
 		)
@@ -392,6 +404,34 @@
 						(Print "Okay, you win.")
 						(Print "(Game over.)" #at -1 152)
 						(= quit TRUE)
+					)
+					;interactions with inventory items
+					(
+						(and
+							(Said '/*>')
+							(= item (inventory saidMe:))
+						)
+						(event claimed: FALSE)
+						(cond 
+							((item ownedBy: ego)
+								(cond 
+									((Said 'look[<at]')
+										(item showSelf:)
+									)
+								)
+							)
+							((item ownedBy: curRoomNum)
+								(if (Said 'get')
+									(PrintCantDoThat)
+								else
+									(PrintDontHaveIt)
+								)
+							)
+							(else
+								(PrintCantSeeThat)
+							)
+						)
+						(event claimed: TRUE)
 					)
 				)
 			)
@@ -420,5 +460,19 @@
 				)
 			)
 		)
+	)
+)
+
+;add inventory items here
+
+(instance Test_Object of InvItem
+	(properties
+		name {Test Object}
+		description {This is a test object.}
+		said '/object'
+		owner 0
+		view vTestObject
+		loop 0
+		cel 0
 	)
 )
