@@ -373,7 +373,7 @@
 		(if debugging
 			(if
 				(and
-					;if memory is fragmented and debugging is on, bring up a warning and internal debugger
+					;if memory is fragmented and debugging is on, bring up a warning and the internal debugger
 					(u> (MemoryInfo FreeHeap) (+ 20 (MemoryInfo LargestPtr)))
 					(Print
 						"Memory fragmented."

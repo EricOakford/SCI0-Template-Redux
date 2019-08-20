@@ -1,4 +1,10 @@
 ;;; Sierra Script 1.0 - (do not remove this comment)
+;
+;	SPEEDTEST.SC
+;
+;	This is the script that checks the machine speed, then starts the game proper.
+;
+;
 (script# SPEEDTEST)
 (include game.sh)
 (use Main)
@@ -16,7 +22,7 @@
 )
 
 (local
-	local0
+	endTime
 	howFast
 )
 (instance fred of Actor
@@ -52,9 +58,9 @@
 	
 	(method (doit)
 		(super doit:)
-		(if (== (++ howFast) 1) (= local0 (+ 60 (GetTime))))
+		(if (== (++ howFast) 1) (= endTime (+ 60 (GetTime))))
 		(if
-		(and (u< local0 (GetTime)) (not (self script?)))
+		(and (u< endTime (GetTime)) (not (self script?)))
 			(cond 
 				((<= howFast 30) (= detailLevel 0))
 				((<= howFast 60) (= detailLevel 1))

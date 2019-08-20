@@ -54,7 +54,7 @@
 			(keyDown
 				(event claimed: TRUE)
 				(switch (event message?)
-					(KEY_ALT_t
+					(`@t
 						(if
 							(and
 								(> 105 (= roomNum (GetNumber {Which room number?})))
@@ -63,7 +63,7 @@
 							(curRoom newRoom: roomNum)
 						)
 					)
-					(KEY_QUESTION
+					(`?
 						(Print "Debug Key commands:\n
 							ALT-S Show cast (to be implemented)\n
 							ALT-M   Show memory\n
@@ -77,16 +77,16 @@
 							#window SysWindow
 						)
 					)
-					(KEY_ALT_s
+					(`@s
 					)
-					(KEY_ALT_i
+					(`@i
 						(= i (GetNumber {ID number of the object?}))
 						(ego get: i)
 					)
-					(KEY_ALT_m
+					(`@m
 						(theGame showMem:)
 					)
-					(KEY_ALT_e
+					(`@e
 						(Format
 							@str
 							{ego\n
@@ -100,16 +100,16 @@
 						)
 						(Print @str #icon (ego view?) 0 0)
 					)
-					(KEY_ALT_v
+					(`@v
 						(Show VMAP)
 					)
-					(KEY_ALT_p
+					(`@p
 						(Show PMAP)
 					)
-					(KEY_ALT_c
+					(`@c
 						(Show CMAP)
 					)
-					(KEY_ALT_d
+					(`@d
 						(SetDebug)
 					)
 					;Added to allow the interpreter's internal debugger

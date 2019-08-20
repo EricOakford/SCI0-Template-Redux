@@ -4,9 +4,16 @@
 ; * By Brian Provinciano
 (include keys.sh)
 
-;NOTE: Much of the defines in this file have been deprecated.
-;It is recommended to use the defines in SYSTEM.SH and KERNEL.SH now.
+;NOTE: It is recommended to use the defines in SYSTEM.SH and KERNEL.SH now,
+;as they are much more accurate.
 ;This file will be kept here for compatibility reasons.
+;
+;
+;Studio key code = Sierra key code translation examples
+;KEY_C = `c
+;KEY_ALT_C = `@c
+;KEY_F2 = `#2
+;KEY_PAUSE = `^s
 ;
 ; * General
 (define TRUE 1)
