@@ -72,26 +72,7 @@
 	volume =  12
 	version =  {ego}
 	locales
-	curSaveDir
-		global31
-		global32
-		global33
-		global34
-		global35
-		global36
-		global37
-		global38
-		global39
-		global40
-		global41
-		global42
-		global43
-		global44
-		global45
-		global46
-		global47
-		global48
-		global49
+	[curSaveDir 20]
 	aniThreshold =  10
 	perspective
 	features
@@ -152,7 +133,7 @@
 	detailLevel		;detail level (0 = low, 1 = mid, 2 = high, 3 = ultra)
 	theMusic			;music object, current playing music
 	colorCount
-	speedCount		;used to test how fast the system is
+	howFast			;used to test how fast the system is
 					;and used in determining detail level. (used in conjunction with detailLevel)
 	cIcon
 	soundFx				;sound effect being played
@@ -180,7 +161,6 @@
 	(theGame setCursor: waitCursor TRUE)
 	(ego setMotion: 0)
 )
-
 
 (procedure (NormalEgo)
 	;normalizes ego's animation
@@ -307,6 +287,7 @@
 (instance SFX of Sound
 	(properties
 		number sDeath
+		priority 15
 	)
 )
 
@@ -323,21 +304,21 @@
 		(super init:)
 		(= cIcon deathIcon)
 		(= ego egoObj)
-		(= version {x.yyy.zzz})
+		(= version {x.yyy.zzz}) ;set game version here
 		(User alterEgo: ego)
 		(TheMenuBar init: draw: hide:)
 		(StatusLine code: statusCode disable:) ;hide the status code at startup		
-		((= theMusic music) number: sDeath owner: self init:)
-		((= soundFx SFX) number: sDeath owner: self init:)
 		(if debugging
 			(self setCursor: normalCursor (HaveMouse) 300 170)
 		else
 			(HandsOff)
 			(self setCursor: normalCursor FALSE 350 200)
-		)			
+		)
+		((= theMusic music) number: sDeath owner: self init:)
+		((= soundFx SFX) number: sDeath owner: self init:)
 		(inventory add:
 			;Add your inventory items here. Make sure they are in the same order as the item list in GAME.SH.
-				Test_Object
+			Test_Object
 		)
 		;moved any code not requiring any objects in this script into its own script
 		((ScriptID GAME_INIT 0) init:)
@@ -358,17 +339,8 @@
 		(super replay:)
 	)	
 	
-	(method (newRoom)
-		(super newRoom: &rest)
-	)
-	
 	(method (startRoom roomNum)
-		(LoadMany FALSE	
-			;These are all disposed when going to another room, to reduce the
-			;chances of "Memory Fragmented" errors.
-			EXTRA FILE QSOUND GROOPER FORCOUNT SIGHT DPATH JUMP SMOOPER
-			REVERSE CHASE FOLLOW WANDER EXTRA AVOIDER TIMER QSOUND
-		)
+		((ScriptID DISPOSE_CODE 0) doit:)
 		(cls)
 		(if debugging
 			(if
@@ -389,16 +361,45 @@
 	)
 	
 	(method (handleEvent event &tmp item)
-		(if (event claimed?)
-			(return)
+		(if debugging
+			(if
+				(and
+					(== (event type?) mouseDown)
+					(& (event modifiers?) shiftDown)
+				)
+				(if (not (User canInput:))
+					(event claimed: TRUE)
+				else
+					(cast eachElementDo: #handleEvent event)
+					(if (event claimed?)
+						(return)
+					)
+				)
+			)
+			(super handleEvent: event)
+			(if (event claimed?)
+				(return)
+			)
+			(switch (event type?)
+				(keyDown
+					((ScriptID DEBUG) handleEvent: event)
+				)
+				(mouseDown
+					((ScriptID DEBUG) handleEvent: event)
+				)
+			)
+		else
+			(super handleEvent: event)
 		)
-		(super handleEvent: event)
 		(switch (event type?)
 		;Add global parser commands here.
 			(saidEvent
 				(cond
 					((Said 'die') ;this shouldn't be in your game; it's just used to test the EgoDead procedure.
-						(EgoDead "This has beea a test of the Emergency Death Broadcast System." #title {You're dead.} #icon vDeathSkull)
+						(EgoDead "This has beea a test of the Emergency Death Broadcast System."
+							#title {You're dead.}
+							#icon vDeathSkull
+						)
 					)
 					((Said 'cheat')
 						(Print "Okay, you win.")
@@ -433,30 +434,6 @@
 						)
 						(event claimed: TRUE)
 					)
-				)
-			)
-		)
-		(if debugging
-			(if
-				(and
-					(== (event type?) mouseDown)
-					(& (event modifiers?) shiftDown)
-				)
-				(if (not (User canInput?))
-					(event claimed: TRUE)
-				else
-					(cast eachElementDo: #handleEvent event)
-					(if (event claimed?)
-						(return)
-					)
-				)
-			)
-			(switch (event type?)
-				(keyDown
-					((ScriptID DEBUG) handleEvent: event)
-				)
-				(mouseDown
-					((ScriptID DEBUG) handleEvent: event)
 				)
 			)
 		)

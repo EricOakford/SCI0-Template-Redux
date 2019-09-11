@@ -5,6 +5,7 @@
 (use Intrface)
 (use Save)
 (use User)
+(use Game)
 (use Actor)
 (use System)
 
@@ -12,10 +13,10 @@
 	debugRm 0
 )
 
-(instance debugRm of Script
+(instance debugRm of Locale
 	(properties)
 	
-	(method (handleEvent event &tmp newEvent temp1 [temp2 2] i [str 80] roomNum temp86)
+	(method (handleEvent event &tmp newEvent temp1 [temp2 2] castFirst [str 80] temp85 temp86)
 		(switch (event type?)
 			(mouseDown
 				(cond 
@@ -24,7 +25,7 @@
 						(User canControl: TRUE)
 						(while (!= 2 ((= newEvent (Event new:)) type?))
 							(GlobalToLocal newEvent)
-							(Animate (cast elements?) FALSE)
+							(Animate (cast elements?) 0)
 							(ego posn: (newEvent x?) (newEvent y?) setMotion: 0)
 							(newEvent dispose:)
 						)
@@ -57,15 +58,15 @@
 					(`@t
 						(if
 							(and
-								(> 105 (= roomNum (GetNumber {Which room number?})))
-								(> roomNum 0)
+								(> 105 (= temp85 (GetNumber {Which room number?})))
+								(> temp85 0)
 							)
-							(curRoom newRoom: roomNum)
+							(curRoom newRoom: temp85)
 						)
 					)
 					(`?
 						(Print "Debug Key commands:\n
-							ALT-S Show cast (to be implemented)\n
+							ALT-S Show cast\n
 							ALT-M   Show memory\n
 							ALT-T Teleport\n
 							ALT-V   Visual\n
@@ -74,18 +75,52 @@
 							ALT-I Get InvItem\n
 							ALT-D Internal debugger\n
 							ALT-E   Show ego\n"
-							#window SysWindow
-						)
+							#window SysWindow)
 					)
 					(`@s
+						(= castFirst (cast first:))
+						(while castFirst
+							(= temp1 (NodeValue castFirst))
+							(Print
+								(Format
+									@str
+									{view: %d\n
+									(x,y):%d,%d\n
+									STOPUPD=%d\n
+									IGNRACT=%d\n
+									ILLBITS=$%x}
+									(temp1 view?)
+									(temp1 x?)
+									(temp1 y?)
+									(/ (& (temp1 signal?) $0004) 4)
+									(/ (& (temp1 signal?) $4000) 16384)
+									(if
+										(or
+											(== (temp1 superClass?) Actor)
+											(== (temp1 superClass?) Ego)
+										)
+										(temp1 illegalBits?)
+									else
+										-1
+									)
+								)
+								#window
+								SysWindow
+								#title
+								(temp1 name?)
+								#icon
+								(temp1 view?)
+								(temp1 loop?)
+								(temp1 cel?)
+							)
+							(= castFirst (cast next: castFirst))
+						)
 					)
 					(`@i
-						(= i (GetNumber {ID number of the object?}))
-						(ego get: i)
+						(= castFirst (GetNumber {ID number of the object?}))
+						(ego get: castFirst)
 					)
-					(`@m
-						(theGame showMem:)
-					)
+					(`@m (theGame showMem:))
 					(`@e
 						(Format
 							@str
@@ -100,23 +135,14 @@
 						)
 						(Print @str #icon (ego view?) 0 0)
 					)
-					(`@v
-						(Show VMAP)
-					)
-					(`@p
-						(Show PMAP)
-					)
-					(`@c
-						(Show CMAP)
-					)
-					(`@d
-						(SetDebug)
-					)
+					(`@v (Show VMAP))
+					(`@p (Show PMAP))
+					(`@c (Show CMAP))
+					(`@d (SetDebug))
 					;Added to allow the interpreter's internal debugger
 					;to be accessed with a simpler key combo
-					(else
-						(event claimed: FALSE)
-					)
+					
+					(else  (event claimed: FALSE))
 				)
 			)
 		)

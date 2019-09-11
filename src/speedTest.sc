@@ -23,7 +23,6 @@
 
 (local
 	endTime
-	howFast
 )
 (instance fred of Actor
 	(properties)
@@ -36,12 +35,9 @@
 	)
 	
 	(method (init)
-		(TheMenuBar state: FALSE)
 		(HandsOff)
 		(super init:)
 		(sounds eachElementDo: #stop)
-		(while (u> (GetTime) -1024)
-		)
 		(fred
 			view: vSpeedTest
 			setLoop: 0
@@ -58,13 +54,16 @@
 	
 	(method (doit)
 		(super doit:)
-		(if (== (++ howFast) 1) (= endTime (+ 60 (GetTime))))
+		(if (== (++ howFast) 1)
+			(= endTime (+ 60 (GetTime)))
+		)
 		(if
 		(and (u< endTime (GetTime)) (not (self script?)))
 			(cond 
-				((<= howFast 30) (= detailLevel 0))
-				((<= howFast 60) (= detailLevel 1))
-				(else (= detailLevel 2))
+				((<= howFast 25) (= detailLevel 0))
+				((<= howFast 40) (= detailLevel 1))
+				((<= howFast 60) (= detailLevel 2))
+				(else (= detailLevel 3))
 			)
 			(self setScript: speedScript)
 		)
@@ -84,24 +83,20 @@
 			(0 (= cycles 1))
 			(1
 				(theGame setSpeed: 6)
-				(= cycles 10)
+				(= cycles (if debugging 1 else 30))
 			)
 			(2
 				(if debugging
 					(repeat
-						(= str 0)
+						(= str NULL)
 						(= nextRoom
 							(Print "Where to, boss?"
 								#edit @str 5
 								#window SysWindow
 							)
 						)
-						(if str
-							(= nextRoom (ReadNumber @str))
-							(if (> nextRoom 0)
-								(break)
-							)
-						)
+						(if str (= nextRoom (ReadNumber @str)))
+						(if (> nextRoom NULL) (break))
 					)
 				else
 					(= nextRoom TITLE)

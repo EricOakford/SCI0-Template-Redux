@@ -17,9 +17,10 @@
 		picture pBlack
 		style DISSOLVE
 	)
-	
+
 	(method (init)
 		(super init:)
+		(TheMenuBar state: FALSE)
 		(self setScript: titleScreen)
 	)
 )

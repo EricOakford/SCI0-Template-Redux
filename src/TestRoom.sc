@@ -5,13 +5,14 @@
 (use Game)
 (use Intrface)
 (use Main)
+(use Actor)
 (use System)
 
 (public
-	rm002 0
+	rm011 0
 )
 
-(instance rm002 of Room
+(instance rm011 of Room
 	(properties
 		picture pWhite
 		north 0
@@ -19,7 +20,7 @@
 		south 0
 		west 0
 	)
-	
+
 	(method (init)
 		(StatusLine enable:)
 		(super init:)

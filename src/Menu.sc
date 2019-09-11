@@ -78,7 +78,7 @@
 	)
 
 
-	(method (handleEvent event &tmp i oldPause [str 100])
+	(method (handleEvent event &tmp i oldPause [str 250])
 		(switch (super handleEvent: event)
 
 
