@@ -593,7 +593,8 @@
 		(if (& signal delObj)
 			(return)
 		)
-		(&= signal (~ blocked))		;clear the blocked bit
+		;EO: Commented out following code to match Iceman demo's script
+		;(&= signal (~ blocked))		;clear the blocked bit
 		
 		(if script 
 			(script doit:)
@@ -861,12 +862,13 @@
 		(return 
 			(and
 				(or
-					(and
-						(== illegalBits 0)
-						(& signal ignrAct)
-						;EO: Was "ignoreActors", but SCICompanion gives an "undeclared identifier" error when trying to compile.
-						;Decompiled scripts that use that method output this as "--UNKNOWN-PROP-NAME--".
-					)
+;;;					(and
+;;;						(== illegalBits 0)
+;;;						(& signal ignrAct)
+;;;						;EO: Was "ignoreActors", but SCICompanion gives an "undeclared identifier" error when trying to compile.
+;;;						;Decompiled scripts that use that method output this as "--UNKNOWN-PROP-NAME--".
+;;;					)
+					(and (== illegalBits 0) (& signal ignrAct))	;EO: Added from Iceman demo
 					;;Illegal controls and baseRect intersections.
 					(CanBeHere self (cast elements?))
 				)

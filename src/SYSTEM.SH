@@ -52,6 +52,7 @@
 (define	FORCOUNT		956)	;forward-loop a specified number of times
 (define	TRACK			955)	;motion to track an actor at an x/y offset.
 (define	GOTOSAID		954)	;turn to or approach "said" object.
+(define	MOVEFWD			951)	;EO: script added per 5/24/90 update
 
 
 (define	INTRFACE		255)

@@ -251,15 +251,19 @@
 				((<= x westEdge)
 					WEST
 				)
-				((<= y (curRoom horizon?))
-					NORTH
-				)
+;;;				((<= y (curRoom horizon?))
+;;;					NORTH
+;;;				)
 				((>= x eastEdge)
 					EAST
 				)
 				((>= y southEdge)
 					SOUTH
 				)
+				;EO: moved horizon code here per 4/2/90 update
+				((<= y (curRoom horizon?))
+					NORTH
+				)				
 				(else
 					0
 				)
@@ -306,10 +310,12 @@
 		(if (not (super handleEvent: event))	;event not claimed
 			(switch (event type?)
 				(mouseDown
-					(if (and
-							(not (& (event modifiers?) shiftDown))
-							(User controls?)
-						)
+					(if
+;;;						(and
+;;;							(not (& (event modifiers?) shiftDown))
+;;;							(User controls?)
+;;;						)
+						(and (not (event modifiers?)) (User controls?))	;EO: Added from Iceman demo
 						(self setMotion:MoveTo (event x?) (event y?))
 						(User prevDir: 0)
 						(event claimed:TRUE)

@@ -506,9 +506,10 @@
 				(self setCursor:waitCursor TRUE)
 
 				(if (CheckSaveGame name num version)
+					;EO: Disposal code commented out to reflect Iceman demo code
 					;Dump all members of the cast, thus freeing their underbits.
-					(cast eachElementDo: #dispose:)
-					(cast eachElementDo: #delete:)
+					;(cast eachElementDo: #dispose:)
+					;(cast eachElementDo: #delete:)
 
 					(RestoreGame name num version)
 				else
@@ -893,7 +894,8 @@
 		;; Draw the given picture in the appropriate style.
 
 		;; Dispose of addToPics list that is now invalid
-		(theAddToPics dispose:)
+		;(theAddToPics dispose:)
+		(if theAddToPics (theAddToPics dispose:))	;EO: added from Iceman demo
 
 		(= curPic pic)
 		(= overlays -1)

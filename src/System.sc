@@ -450,7 +450,8 @@
 			(and n node)
 			((-- n) (= node (NextNode node)))	;((-- n) (= node (self next: node)))
 		)
-		(return (NodeValue node))
+		(return (if node (NodeValue node) else 0)) ;EO: Added from Iceman demo
+		;(return (NodeValue node))
 	)
 	
 	
@@ -719,7 +720,8 @@
 		
 	(method (cue)
 		;;(if (!= self (client script)) (Print "error: orphan script!"))	;debugging aid
-		(self changeState: (+ state 1) &rest)
+		;(self changeState: (+ state 1) &rest)
+		(if client (self changeState: (+ state 1) &rest)) ;EO: Added from Iceman demo
 	)
 	
 	(method (setScript newScript)

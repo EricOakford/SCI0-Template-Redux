@@ -17,14 +17,30 @@
 
 
 (procedure (IsOffScreen theObj)
+;;;	(return
+;;;		(not
+;;;			(and
+;;;				(< 0 (theObj x?) SCRNWIDE)
+;;;				(< 0 (- (theObj y?) (theObj z?)) SCRNHIGH)
+;;;			)
+;;;		)
+;;;	)
+	;EO: Code changed per 6/04/90 update
 	(return
 		(not
-			(and
-				(< 0 (theObj x?) SCRNWIDE)
-				(< 0 (- (theObj y?) (theObj z?)) SCRNHIGH)
+			(if
+				(and
+					(<= 0 (theObj x?))
+					(<= (theObj x?) SCRNWIDE)
+					(<= 0 (- (theObj y?) (theObj z?)))
+				)
+				(<= (- (theObj y?) (theObj z?)) SCRNHIGH)
+			else
+				0
 			)
 		)
 	)
+
 )
 
 (procedure (CantBeSeen theSight optSeer optFieldAngle optFieldDepth 

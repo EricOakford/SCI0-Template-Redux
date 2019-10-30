@@ -148,7 +148,9 @@
 				)
 			)
 			(hesitate
-				(if (== cycleType ExtraEndAndBeginLoop)
+				;(if (== cycleType ExtraEndAndBeginLoop)
+					;EO: Code tweaked per 5/04/90 update
+					(if (and hesitation (== cycleType ExtraEndAndBeginLoop))
 					(= cycles hesitation)
 				else
 					(self cue:)
