@@ -211,7 +211,7 @@
 	)
 )		
 
-(procedure (EgoDead &tmp printRet)
+(procedure (EgoDead)
 	;This procedure handles when Ego dies. It closely matches that of QFG1EGA.
 	;To use it: "(EgoDead {death message})".
 	;You can add a title and icon in the same way as a normal Print message.
@@ -221,28 +221,26 @@
 	(theGame setCursor: normalCursor TRUE)
 	(soundFx stop:)
 	(theMusic number: deathMusic play:)
-		(repeat
-			(= printRet
-				(Print
-					&rest
-					#width 250
-					#button	{Restore} 1
-					#button {Restart} 2
-					#button {__Quit__} 3
-				)
+	(repeat
+		(switch
+			(Print
+				&rest
+				#width 250
+				#button	{Restore} 1
+				#button {Restart} 2
+				#button {__Quit__} 3
 			)
-				(switch printRet
-					(1
-						(theGame restore:)
-					)
-					(2
-						(theGame restart:)
-					)
-					(3
-						(= quit TRUE) (break)
-					)
-				)
+			(1
+				(theGame restore:)
+			)
+			(2
+				(theGame restart:)
+			)
+			(3
+				(= quit TRUE) (break)
+			)
 		)
+	)
 )
 (procedure (PrintDontHaveIt)
 	(Print "You don't have it.")
@@ -297,7 +295,12 @@
 
 (instance SCI0 of Game ;Replace "SCI0 with the game's internal name here (up to 6 characters)
 	; The main game instance. It adds game-specific functionality.
-	(properties)
+	(properties
+		;Set your game's language here.
+		;Supported langauges can be found in SYSTEM.SH.		
+		parseLang ENGLISH
+		printLang ENGLISH
+	)
 	
 	(method (init)
 		;set up various aspects of the game
@@ -395,12 +398,6 @@
 		;Add global parser commands here.
 			(saidEvent
 				(cond
-					((Said 'die') ;this shouldn't be in your game; it's just used to test the EgoDead procedure.
-						(EgoDead "This has beea a test of the Emergency Death Broadcast System."
-							#title {You're dead.}
-							#icon vDeathSkull
-						)
-					)
 					((Said 'cheat')
 						(Print "Okay, you win.")
 						(Print "(Game over.)" #at -1 152)

@@ -86,6 +86,14 @@
 (define	TPLAIN	0)
 (define	TDIMMED	1)
 
+;Language defines (added per Iceman demo code by EO)
+(define	ENGLISH		1)
+(define	FRENCH		33)
+(define	SPANISH		34)
+(define	ITALIAN		39)
+(define	GERMAN		49)
+(define	JAPANESE	81)
+(define	PORTUGUESE	351)
 
 ;Dialog item types
 (define	dButton	1)

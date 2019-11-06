@@ -117,6 +117,11 @@
 
 	(properties
 		script 0			;a current script for the game as a whole
+		;EO: Language properties added from Iceman demo
+		parseLang ENGLISH
+		printLang ENGLISH
+		subtitleLang NULL
+
 	)
 
 ;;;	(methods
@@ -454,7 +459,7 @@
 	)
 
 
-	(method (save &tmp [comment 20] num oldCur oldPause)
+	(method (save &tmp [comment 20] num oldCur oldPause oldLang)
 		;; Save the game at its current state.  The user interface work
 		;; for this is done in class Save, the actual save in the (SaveGame)
 		;; kernel function.
@@ -470,6 +475,7 @@
 			)
 			(= num (Save doit: @comment))
 			(if (!= num -1)
+				(= parseLang oldLang)	;EO: Added from Iceman demo
 				(= oldCur (self setCursor:waitCursor TRUE))
 				(if (not (SaveGame name num @comment version))
 					(Print
@@ -484,14 +490,19 @@
 			(PromptForDiskChange FALSE)
 		)
 		(Sound pause:oldPause)
+		(= parseLang oldLang)	;EO: Added from Iceman demo
 	)
 
 
-	(method (restore &tmp [comment 20] num oldCur oldPause)
+	(method (restore &tmp [comment 20] num oldCur oldPause oldLang)
 		;; Restore a previously saved game.  The user interface work
 		;; for this is done in class Restore, the actual save in the
 		;; (RestoreGame) kernel function.
-
+		
+		;;;EO: added from Iceman demo
+		(= oldLang parseLang)
+		(= parseLang 1)
+		;;;
 		(Load FONT smallFont)
 		(Load CURSOR waitCursor)
 
@@ -520,7 +531,9 @@
 						#button: {OK} 1
 					)
 					(self setCursor:oldCur (HaveMouse))
+					(= parseLang oldLang)
 				)
+				else (= parseLang oldLang)
 			)
 			(PromptForDiskChange FALSE)
 		)
