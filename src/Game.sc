@@ -478,9 +478,7 @@
 				(= parseLang oldLang)	;EO: Added from Iceman demo
 				(= oldCur (self setCursor:waitCursor TRUE))
 				(if (not (SaveGame name num @comment version))
-					(Print
-						"Your save game disk is full.  You must either use another
-						disk or save over an existing saved game."
+					(Print GAME 0
 						#font: SYSFONT
 						#button: {OK} 1
 					)
@@ -525,8 +523,7 @@
 					(RestoreGame name num version)
 				else
 					(Print
-						"That game was saved under a different interpreter.  It
-						cannot be restored."
+						GAME 1
 						#font: SYSFONT
 						#button: {OK} 1
 					)
@@ -579,7 +576,7 @@
 	(method (wordFail word &tmp [str 100])
 		;; Invoked when the parser can't find a word in the vocabulary.
 
-		(Printf "I don't understand \"%s\"." word)
+		(Printf GAME 2 word)
 		(return 0)
 	)
 
@@ -587,7 +584,7 @@
 	(method (syntaxFail)
 		;; Invoked when the parser can't parse user input.
 
-		(Print "That doesn't appear to be a proper sentence.")
+		(Print GAME 3)
 	)
 
 
@@ -596,7 +593,7 @@
 		;; sentence but the sentence doesn't make sense (such as
 		;; "give tree to rock").
 
-		(Print "That sentence doesn't make sense.")
+		(Print GAME 4)
 	)
 
 
@@ -604,7 +601,7 @@
 		;; Invoked when a said event remains unclaimed after being sent to
 		;; all objects in the game.
 
-		(Print "You've left me responseless.")
+		(Print GAME 5)
 	)
 
 
@@ -1049,7 +1046,7 @@
 		)
 
 		(Format @str
-			"Please insert your %s disk in drive %s."
+			GAME 6
 			(if saveDisk {SAVE GAME} else {GAME})
 			@curDevice
 		)
