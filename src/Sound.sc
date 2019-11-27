@@ -136,6 +136,7 @@
 		;; cue or sound completion has occurred.  If so, cue:s the client.
 
 		(if signal
+			(if (== signal -1) (DoSound UpdateCues))		;EO: added from Iceman demo.
 			(if (IsObject client)
 				(client cue: self)
 			)
