@@ -3,8 +3,8 @@
 ;
 ; * Put all the defines specific to your game's menu bar in here
 
-;NOTE: SSCI allowed defining multiple "starting" numbers in a single enum, but SCICompanion only allows once
-; so, we have to start multiple enums to define the entirety of the menu system.
+;NOTE: SSCI allowed defining multiple "starting" numbers in a single enum, but SCICompanion only allows one,
+; so we have to start multiple enums to define the entirety of the menu system.
 ;
 ;
 
