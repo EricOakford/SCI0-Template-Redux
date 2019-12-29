@@ -13,6 +13,7 @@
 (script# GAME_INIT)
 (include game.sh)
 (use Main)
+(use Window)
 (use Save)
 (use User)
 (use System)
@@ -24,14 +25,14 @@
 (instance gameInitCode of Code
 	(method (init)
 		(= debugging TRUE) ;Set to TRUE if you want to enable the debug features.
-		(SysWindow
+		(= systemWindow Window)
+		(systemWindow
 			;These colors can be changed to suit your preferences.
-			color: (= curTextColor vBLACK)
-			back: (= curBackColor vWHITE)
+			color: (= myTextColor vBLACK)
+			back: (= myBackColor vWHITE)
 		)
-		(= colorCount (Graph GDetect))
-		(= systemWindow SysWindow)
-		(= musicChannels (DoSound NumVoices))
+		(= numColors (Graph GDetect))
+		(= numVoices (DoSound NumVoices))
 		(= useSortedFeatures TRUE)
 		(= possibleScore 0)	;Set the maximum score here
 		(= showStyle HSHUTTER)

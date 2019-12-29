@@ -11,13 +11,20 @@
 
 ; Commonly-used header files are nested here, so most scripts only need to include this one.
 
+; howFast values
+(enum
+	slow
+	medium
+	fast
+	fastest
+)
+
 ; Game modules
 (enum
 	MAIN			;0
 	SPEEDTEST		;1
 	DEBUG			;2
-	GAME_INV		;3	;unused in SCI0, as it is more memory-efficient to place the inventory 
-						;in MAIN.SC
+	INVDESC			;3	;inventory item descriptions (text-only)
 	GAME_INIT		;4
 	DISPOSE_CODE	;5
 )
