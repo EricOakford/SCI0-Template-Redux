@@ -311,11 +311,10 @@
 			(switch (event type?)
 				(mouseDown
 					(if
-;;;						(and
-;;;							(not (& (event modifiers?) shiftDown))
-;;;							(User controls?)
-;;;						)
-						(and (not (event modifiers?)) (User controls?))	;EO: Added from Iceman demo
+						(and
+							(not (& (event modifiers?) shiftDown))
+							(User controls?)
+						)
 						(self setMotion:MoveTo (event x?) (event y?))
 						(User prevDir: 0)
 						(event claimed:TRUE)
