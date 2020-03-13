@@ -34,7 +34,7 @@
 	Bset 7
 	Bclr 8
 	SolvePuzzle 9
-	EgoDead	10
+	EgoDead 10
 	DontHave 11
 	AlreadyDone 12
 	NotClose 13
@@ -43,48 +43,56 @@
 )
 
 (local
-	;refer to SYSTEM.SH for information on globals 0-99.
-	ego
-	theGame
-	curRoom
-	speed =  6
-	quit
-	cast
-	regions
-	timers
-	sounds
-	inventory
-	addToPics
-	curRoomNum
-	prevRoomNum
-	newRoomNum
-	debugOn
-	score
-	possibleScore
-	showStyle =  IRISOUT
-	aniInterval
-	theCursor
-	normalCursor =  ARROW_CURSOR
-	waitCursor =  HAND_CURSOR
-	userFont =  USERFONT
-	smallFont =  999
-	lastEvent
-	modelessDialog
-	bigFont =  USERFONT
-	volume =  12
-	version =  {ego}
+	ego							;pointer to ego
+	theGame						;ID of the Game instance
+	curRoom						;ID of current room
+	speed =  6					;The number of ticks between animations. This is set, usually as a menu
+								;	option, to determine the speed of animation. The default is 6.
+	quit						;when TRUE, quit game
+	cast						;collection of actors
+	regions						;set of current regions
+	timers						;list of timers in the game
+	sounds						;set of sounds being played
+	inventory					;set of inventory items in game
+	addToPics					;list of views added to the picture
+	curRoomNum					;current room number
+	prevRoomNum					;previous room number
+	newRoomNum					;number of room to change to
+	debugOn						;generic debug flag -- set from debug menu
+	score						;the player's current score
+	possibleScore				;highest possible score
+	showStyle =  IRISOUT		;The global style for the transition from one picture to another.  This
+     							;   may be overridden by the style property of a given room.  See the
+     							;   DrawPic kernel function for the possible styles.
+	aniInterval					;The number of timer ticks more than the Game's speed which it took to
+     							;   complete the last animation cycle.  A non-zero aniInterval means that the
+     							;   system is not keeping up.
+	theCursor						;the number of the current cursor
+	normalCursor = ARROW_CURSOR		;number of normal cursor form
+	waitCursor	 = HAND_CURSOR		;cursor number of "wait" cursor
+	userFont	 = USERFONT			;font to use for Print
+	smallFont	 = 4				;small font for save/restore, etc.
+	lastEvent					;the last event (used by save/restore game)
+	modelessDialog				;the modeless Dialog known to User and Intrface
+	bigFont =  USERFONT			;large font
+	volume =  12				;last volume level set (from 0 to 15, 0 being off, 15 being loudest)
+	version						;pointer to 'incver' version string
+                                ;   WARNING!  Must be set in room 0
+                                ;   (usually to {x.yyy    } or {x.yyy.zzz})
 	locales
-	[curSaveDir 20]
+	[curSaveDir 20]			;current save drive/directory string [20 chars long]
 	aniThreshold =  10
-	perspective
-	features
-	sortedFeatures
-	useSortedFeatures
-	demoScripts
-	egoBlindSpot
+	perspective				;player's viewing angle: degrees away from vertical along y axis
+	features				;locations that may respond to events
+	sortedFeatures          ;requires SORTCOPY (script 984)
+	useSortedFeatures		;enable cast & feature sorting?
+	demoScripts				
+	egoBlindSpot			;actors behind ego within angle 
+							;from straight behind. 
+							;Default zero is no blind spot
 	overlays =  -1
-	doMotionCue
-	systemWindow
+	doMotionCue				;a motion cue has occurred - process it
+	systemWindow			;ID of standard system window
 	demoDialogTime =  3
 	currentPalette
 	modelessPort
@@ -144,6 +152,9 @@
 	myBackColor		;color of message boxes
 	egoWalk			;pointer for ego's Walk object
 	egoStopWalk		;pointer for ego's StopWalk object
+	keyDownHandler
+	directionHandler
+	mouseDownHandler
 )
 
 (procedure (RedrawCast)
@@ -245,6 +256,7 @@
 		)
 	)
 )
+
 (procedure (DontHave)
 	(Print "You don't have it.")
 )
@@ -300,6 +312,12 @@
 	(properties)
 )
 
+(instance keyH of EventHandler)		;get keyDown events
+
+(instance dirH of EventHandler)		;get direction events
+
+(instance mouseH of EventHandler)	;get mouseDown events
+
 (instance SCI0 of Game ;Replace "SCI0 with the game's internal name here (up to 6 characters)
 	; The main game instance. It adds game-specific functionality.
 	(properties
@@ -323,6 +341,10 @@
 		(= egoWalk egoW)
 		(= egoStopWalk egoSW)
 		(= version {x.yyy.zzz}) ;set game version here
+		((= keyDownHandler keyH) add:)
+		((= directionHandler dirH) add:)
+		((= mouseDownHandler mouseH) add:)
+		(= useSortedFeatures TRUE)		
 		(User alterEgo: ego)
 		(TheMenuBar init: draw: hide: state: FALSE)
 		(StatusLine code: statusCode disable:) ;hide the status line at startup
@@ -355,8 +377,8 @@
 			(if (DoSound SoundOn) {Sound off} else {Sound on})
 		)
 		(super replay:)
-	)	
-	
+	)
+
 	(method (startRoom roomNum)
 		((ScriptID DISPOSE_CODE 0) doit:)
 		(cls)
@@ -374,26 +396,36 @@
 			)
 			(User canInput: TRUE)
 		)
+		(mouseDownHandler add: cast features)
 		(NormalEgo)
 		(super startRoom: roomNum)
+		(if debugging
+			(curRoom setLocales: DEBUG)
+		)
 	)
 	
 	(method (handleEvent event &tmp i)
-		(super handleEvent: event)
-		(if debugging
-			(switch (event type?)
-				(keyDown
-					((ScriptID DEBUG) handleEvent: event)
-				)
-				(mouseDown
-					((ScriptID DEBUG) handleEvent: event)
-				)
-			)
-		)
 		(switch (event type?)
+			(keyDown
+				(keyDownHandler handleEvent: event)
+			)
+			(direction
+				(directionHandler handleEvent: event)
+			)
+			(mouseDown
+				(mouseDownHandler handleEvent: event)
+			)
+			(mouseUp
+				(cast handleEvent: event)
+			)
+			(joyDown
+				(event type: keyDown message: ENTER)
+				(keyDownHandler handleEvent: event)
+			)			
 		;Add global parser commands here.
 			(saidEvent
 				(cond
+					((super handleEvent: event)) ;for rooms, regions, and locales
 					((Said 'cheat')
 						(Print "Okay, you win.")
 						(Print "(Game over.)" #at -1 152)
@@ -411,7 +443,7 @@
 						)
 					)
 				)
-			)
+			);end of saidEvents
 		)
 	)
 )

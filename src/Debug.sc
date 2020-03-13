@@ -16,7 +16,20 @@
 (instance debugRm of Locale
 	(properties)
 	
+	(method (init)
+		(super init:)
+		(mouseDownHandler add: self)
+		(keyDownHandler add: self)
+	)
+	
+	(method (dispose)
+		(mouseDownHandler delete: self)
+		(keyDownHandler delete: self)
+		(super dispose:)
+	)
+	
 	(method (handleEvent event &tmp evt obj i [str 80] nullStr nextRoom)
+		(if (or (not debugging) (event claimed?)) (return))
 		(switch (event type?)
 			(mouseDown
 				(cond 
@@ -32,7 +45,6 @@
 						(evt dispose:)
 					)
 					((& (event modifiers?) shiftDown)
-						(event claimed: TRUE)
 						(= obj
 							(Print
 								(Format @str "%d/%d" (event x?) (event y?))
@@ -129,17 +141,25 @@
 							#icon (ego view?) 0 0
 						)
 					)
-					(`@v (Show VMAP))
-					(`@p (Show PMAP))
-					(`@c (Show CMAP))
-					(`@d (SetDebug))
-					;Added to allow the interpreter's internal debugger
-					;to be accessed with a simpler key combo
-					
-					(else  (event claimed: FALSE))
+					(`@v
+						(Show VMAP)
+					)
+					(`@p
+						(Show PMAP)
+					)
+					(`@c
+						(Show CMAP)
+					)
+					(`@d
+						;Added to allow the interpreter's internal debugger
+						;to be accessed with a simpler key combo
+						(SetDebug)
+					)
+					(else
+						(event claimed: FALSE)
+					)
 				)
 			)
 		)
-		(DisposeScript DEBUG)
 	)
 )
