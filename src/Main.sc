@@ -40,60 +40,57 @@
 	NotClose 13
 	CantDo 14
 	CantSee 15
+	InitAddToPics 16
+	InitFeatures 17
 )
 
 (local
-	ego							;pointer to ego
-	theGame						;ID of the Game instance
-	curRoom						;ID of current room
-	speed =  6					;The number of ticks between animations. This is set, usually as a menu
-								;	option, to determine the speed of animation. The default is 6.
-	quit						;when TRUE, quit game
-	cast						;collection of actors
-	regions						;set of current regions
-	timers						;list of timers in the game
-	sounds						;set of sounds being played
-	inventory					;set of inventory items in game
-	addToPics					;list of views added to the picture
-	curRoomNum					;current room number
-	prevRoomNum					;previous room number
-	newRoomNum					;number of room to change to
-	debugOn						;generic debug flag -- set from debug menu
-	score						;the player's current score
-	possibleScore				;highest possible score
-	showStyle =  IRISOUT		;The global style for the transition from one picture to another.  This
-     							;   may be overridden by the style property of a given room.  See the
-     							;   DrawPic kernel function for the possible styles.
-	aniInterval					;The number of timer ticks more than the Game's speed which it took to
-     							;   complete the last animation cycle.  A non-zero aniInterval means that the
-     							;   system is not keeping up.
-	theCursor						;the number of the current cursor
-	normalCursor = ARROW_CURSOR		;number of normal cursor form
-	waitCursor	 = HAND_CURSOR		;cursor number of "wait" cursor
-	userFont	 = USERFONT			;font to use for Print
-	smallFont	 = 4				;small font for save/restore, etc.
-	lastEvent					;the last event (used by save/restore game)
-	modelessDialog				;the modeless Dialog known to User and Intrface
-	bigFont =  USERFONT			;large font
-	volume =  12				;last volume level set (from 0 to 15, 0 being off, 15 being loudest)
-	version						;pointer to 'incver' version string
-                                ;   WARNING!  Must be set in room 0
-                                ;   (usually to {x.yyy    } or {x.yyy.zzz})
-	locales
-	[curSaveDir 20]			;current save drive/directory string [20 chars long]
-	aniThreshold =  10
-	perspective				;player's viewing angle: degrees away from vertical along y axis
-	features				;locations that may respond to events
-	sortedFeatures          ;requires SORTCOPY (script 984)
-	useSortedFeatures		;enable cast & feature sorting?
-	demoScripts				
-	egoBlindSpot			;actors behind ego within angle 
-							;from straight behind. 
-							;Default zero is no blind spot
-	overlays =  -1
-	doMotionCue				;a motion cue has occurred - process it
-	systemWindow			;ID of standard system window
-	demoDialogTime =  3
+	ego									;pointer to ego
+	theGame								;ID of the Game instance
+	curRoom								;ID of current room
+	speed =  6							;number of ticks between animations
+	quit								;when TRUE, quit game
+	cast								;collection of actors
+	regions								;set of current regions
+	timers								;list of timers in the game
+	sounds								;set of sounds being played
+	inventory							;set of inventory items in game
+	addToPics							;list of views added to the picture
+	curRoomNum							;current room number
+	prevRoomNum							;previous room number
+	newRoomNum							;number of room to change to
+	debugOn								;generic debug flag -- set from debug menu
+	score								;the player's current score
+	possibleScore						;highest possible score
+	showStyle	=		IRISOUT			;style of picture showing
+	aniInterval							;# of ticks it took to do the last animation cycle
+	theCursor							;the number of the current cursor
+	normalCursor =		ARROW_CURSOR	;number of normal cursor form
+	waitCursor	 =		HAND_CURSOR		;cursor number of "wait" cursor
+	userFont	 =		USERFONT		;font to use for Print
+	smallFont	 =		4				;small font for save/restore, etc.
+	lastEvent							;the last event (used by save/restore game)
+	modelessDialog						;the modeless Dialog known to User and Intrface
+	bigFont		=		USERFONT		;large font
+	volume		=		12				;sound volume
+	version		=		{x.yyy.zzz}		;pointer to 'incver' version string			
+	locales								;set of current locales
+	[curSaveDir 20]						;address of current save drive/directory string
+	aniThreshold	=	10
+	perspective							;player's viewing angle:
+										;	 degrees away from vertical along y axis
+	features							;locations that may respond to events
+	sortedFeatures          			;above+cast sorted by "visibility" to ego
+	useSortedFeatures					;enable cast & feature sorting?
+	demoScripts							;add to curRoomNum to find room demo script
+	egoBlindSpot						;used by sortCopy to exclude
+										;actors behind ego within angle 
+										;from straight behind. 
+										;Default zero is no blind spot
+	overlays	=		-1
+	doMotionCue							;a motion cue has occurred - process it
+	systemWindow						;ID of standard system window
+	demoDialogTime	=	3				;how long Prints stay up in demo mode
 	currentPalette
 	modelessPort
 	;globals 63-99 are unused
@@ -135,26 +132,29 @@
 		global98
 	lastSysGlobal
 	;globals 100 and above are for game use
-	isHandsOff
-	deathMusic	= sDeath	;default death music
-	numColors
-	numVoices
-	debugging		;debug mode enabled
-	howFast			;machine speed level (0 = slow, 1 = medium, 2 = fast, 3 = fastest)
-	machineSpeed	;used to test how fast the system is
-					; and used in determining game speed. (used in conjunction with howFast)
-	theMusic		;music object, current playing music
-	soundFx			;sound effect being played
-	cIcon			;global pointer to cycling icon
-	[gameFlags 10]	;each global can have 16 flags. 10 globals * 16 flags = 160 flags.
-					; If you need more flags, just increase the array!
-	myTextColor		;color of text in message boxes
-	myBackColor		;color of message boxes
-	egoWalk			;pointer for ego's Walk object
-	egoStopWalk		;pointer for ego's StopWalk object
-	keyDownHandler
-	directionHandler
-	mouseDownHandler
+	isHandsOff				;ego can't be controlled
+	deathMusic	=	sDeath	;music to play in EgoDead
+	numColors				;Number of colors supported by graphics driver
+	numVoices				;Number of voices supported by sound driver
+	debugging				;debug mode enabled
+	howFast					;machine speed level (0 = slow, 1 = medium, 2 = fast, 3 = fastest)
+	machineSpeed			;used by the speed tester to test how fast the system is
+							; and used in determining game speed. (used in conjunction with howFast)
+	theMusic				;music object, current playing music
+	soundFx					;sound effect being played
+	cIcon					;global pointer to cycling icon
+	[gameFlags FLAG_ARRAY]	;array of all event flags. It can be increased in GAME.SH.
+	myTextColor				;color of text in message boxes
+	myBackColor				;color of message boxes
+	egoWalk					;pointer for ego's static Walk object
+	egoStopWalk				;pointer for ego's static StopWalk object
+	keyDownHandler			;pointer for keyDown EventHandler
+	directionHandler		;pointer for direction EventHandler
+	mouseDownHandler		;pointer for mouseDown EventHandler
+	oldSysTime				;previous value of system's real-time clock
+	gameSeconds				;elapsed seconds
+	gameMinutes				;elapsed minutes
+	gameHours				;elapsed hours
 )
 
 (procedure (RedrawCast)
@@ -195,7 +195,9 @@
 
 (procedure (cls)
 	;Clear modeless dialog from the screen
-	(if modelessDialog (modelessDialog dispose:))
+	(if modelessDialog
+		(modelessDialog dispose:)
+	)
 )
 
 (procedure (Btst flagEnum)
@@ -251,7 +253,8 @@
 				(theGame restart:)
 			)
 			(3
-				(= quit TRUE) (break)
+				(= quit TRUE)
+				(break)
 			)
 		)
 	)
@@ -277,6 +280,24 @@
 	(Print "You see nothing like that here.")
 )
 
+;These two procedures allow for adding multiple ATPs and features at a time.
+;They were used in QFG2.
+(procedure (InitAddToPics)
+	(addToPics
+		add: &rest
+		eachElementDo: #init
+		doit:
+	)
+)
+
+(procedure (InitFeatures)
+	(features
+		add: &rest
+		eachElementDo: #init
+		doit:
+	)
+)
+
 (instance egoObj of Ego
 	(properties
 		name "ego"
@@ -288,7 +309,6 @@
 (instance egoSW of StopWalk)
 
 (instance statusCode of Code
-	(properties)
 	
 	(method (doit strg)
 		(Format strg "___Template Game_______________Score: %d of %d" score possibleScore)
@@ -308,9 +328,7 @@
 	)
 )
 
-(instance deathIcon of DCIcon
-	(properties)
-)
+(instance deathIcon of DCIcon)
 
 (instance keyH of EventHandler)		;get keyDown events
 
@@ -354,8 +372,16 @@
 			(HandsOff)
 			(self setCursor: normalCursor FALSE 350 200)
 		)
-		((= theMusic music) number: sDeath owner: self init:)
-		((= soundFx SFX) number: sDeath owner: self init:)
+		((= theMusic music)
+			number: sDeath
+			owner: self
+			init:
+		)
+		((= soundFx SFX)
+			number: sDeath
+			owner: self
+			init:
+		)
 		(inventory add:
 			;Add your inventory items here. Make sure they are in the same order as the item list in GAME.SH.
 			Test_Object
@@ -363,11 +389,22 @@
 		;moved any code not requiring any objects in this script into its own script
 		((ScriptID GAME_INIT 0) init:)
 		;and finally, now that the game's been initialized, we can move on to the speed tester.
-		(self newRoom: SPEEDTEST)
+		(self newRoom: SPEED)
 	)
 
-	(method (doit)
+	(method (doit &tmp thisTime)
 		(super doit:)
+		;let the game's clock tick
+		(if (!= oldSysTime (= thisTime (GetTime SYSTIME1)))
+			(= oldSysTime thisTime)
+			(if (== 60 (++ gameSeconds))
+				(= gameSeconds 0)
+				(if (== 60 (++ gameMinutes))
+					(= gameMinutes 0)
+					(++ gameHours)
+				)
+			)
+		)
 	)
 
 	(method (replay)

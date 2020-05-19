@@ -40,12 +40,12 @@
 ;;;		cue
 ;;;	)
 
-	(procedure (FindTrans1 ind)
-		(return [trans1 ind])	; needed to keep scope in this module
-	)
-	(procedure (FindTrans2 ind)
-		(return [trans2 ind])	; needed to keep scope in this module
-	)
+;;;	(procedure (FindTrans1 ind)
+;;;		(return [trans1 ind])	; needed to keep scope in this module
+;;;	)
+;;;	(procedure (FindTrans2 ind)
+;;;		(return [trans2 ind])	; needed to keep scope in this module
+;;;	)
 
 	(method (doit c h whoCares dontGroop &tmp lastDir numLoops)
 		(if (not (IsObject c)) (Print "NOA"))
@@ -112,6 +112,14 @@
 	); dispose
 	
 ); GradualLooper
+
+	;EO: moved procs here to allow GradualCycler to use them
+	(procedure (FindTrans1 ind)
+		(return [trans1 ind])	; needed to keep scope in this module
+	)
+	(procedure (FindTrans2 ind)
+		(return [trans2 ind])	; needed to keep scope in this module
+	)
 
 (class 	GradualCycler of Cycle
 	

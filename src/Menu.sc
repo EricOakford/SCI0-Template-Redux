@@ -85,13 +85,21 @@
 			;**************		SIERRA MENU		**************
 
 			(aboutI
-				(Print (Format @str
-					"SCI0 Template Game Redux\n
-					By Eric Oakford\n\n
-					Original template\n
-					by Brian Provinciano\n
-					Version %s" version) ;this brings up the version number defined in MAIN.SC.
-					#title "About"
+				(Print
+					(Format @str
+						"SCI0 Template Game Redux\n
+						By Eric Oakford\n\n
+						Original template\n
+						by Brian Provinciano\n
+						Version %s" version ;this brings up the version number defined in MAIN.SC.
+					)
+						#title "About"
+				)
+				(Print
+					(Format @str
+						"You've been playing for %d hours, %d minutes, and %d seconds."
+						gameHours gameMinutes gameSeconds
+					)
 				)
 			)
 			(helpI
