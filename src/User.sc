@@ -251,16 +251,12 @@
 				((<= x westEdge)
 					WEST
 				)
-;;;				((<= y (curRoom horizon?))
-;;;					NORTH
-;;;				)
 				((>= x eastEdge)
 					EAST
 				)
 				((>= y southEdge)
 					SOUTH
 				)
-				;EO: moved horizon code here per 4/2/90 update
 				((<= y (curRoom horizon?))
 					NORTH
 				)				

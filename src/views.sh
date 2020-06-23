@@ -10,3 +10,4 @@
 (define vSpeedTest	799)
 (define vTestObject	800)
 (define vDeathSkull	900)
+(define vTitleButton 950)
