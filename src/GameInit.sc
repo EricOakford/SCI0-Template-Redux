@@ -14,27 +14,56 @@
 (include game.sh)
 (use Main)
 (use Window)
+(use Intrface)
 (use Save)
 (use User)
 (use System)
 
 (public
 	gameInitCode 0
+	driverInit 1
 )
 
 (instance gameInitCode of Code
 	(method (init)
 		(= debugging TRUE) ;Set to TRUE if you want to enable the debug features.
-		(= systemWindow Window)
-		(systemWindow
-			;These colors can be changed to suit your preferences.
-			color: (= myTextColor vBLACK)
-			back: (= myBackColor vWHITE)
-		)
-		(= numColors (Graph GDetect))
-		(= numVoices (DoSound NumVoices))
-		(= possibleScore 0)	;Set the maximum score here
-		(= showStyle HSHUTTER)
+		(= possibleScore 0)	;Set the maximum score here		
+		(driverInit doit:)
+		(DoSound ChangeVolume volume)	;ensure that the initial volume is the default
 		(DisposeScript GAME_INIT)	;and finally, trash this script from memory
+	)
+)
+
+(instance driverInit of Code
+	;initialize the colors and sound based on the graphics and sound drivers
+	(method (doit &tmp dftStyle)
+		;initialize number of voices the sound driver supports
+		(= numVoices (DoSound NumVoices))
+		;initialize the number of colors the graphics driver supports	
+		(= numColors (Graph GDetect))
+		(cond
+			((<= numColors 8)
+				(= graphicsDriver CGA)
+				(= myTextColor vBLACK)
+				(= myBackColor vWHITE)
+				(= dftStyle HSHUTTER)
+			)
+			(else	;is EGA
+				(= graphicsDriver EGA)
+				(= myTextColor vBLACK)
+				(= myBackColor vWHITE)
+				(= dftStyle HSHUTTER)
+			)
+		)
+		(= showStyle dftStyle)
+		(systemWindow
+			color: myTextColor
+			back: myBackColor
+		)
+		;here for testing different drivers
+		;(Printf "numVoices is %d" numVoices)
+		;(Printf "numColors is %d" numColors)
+		;(Printf "graphicsDriver value is %d" graphicsDriver)
+		(self dispose:)
 	)
 )

@@ -126,7 +126,7 @@
 						(ego get: i)
 					)
 					(`@k
-						(EgoDead "This has beea a test of the Emergency Death Broadcast System."
+						(EgoDead "This has been a test of the Emergency Death Broadcast System."
 							#title {You're dead.}
 							#icon vDeathSkull
 						)

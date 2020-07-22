@@ -160,6 +160,7 @@
 	gameSeconds				;elapsed seconds
 	gameMinutes				;elapsed minutes
 	gameHours				;elapsed hours
+	graphicsDriver
 )
 
 (procedure (RedrawCast)
@@ -391,12 +392,6 @@
 
 (instance SCI0 of Game ;Replace "SCI0 with the game's internal name here (up to 6 characters)
 	; The main game instance. It adds game-specific functionality.
-	(properties
-		;Set your game's language here.
-		;Supported langauges can be found in SYSTEM.SH.		
-		parseLang ENGLISH
-		printLang ENGLISH
-	)
 	
 	(method (init)
 		;load some important modules
@@ -466,6 +461,8 @@
 	(method (replay)
 		(TheMenuBar draw:)
 		(StatusLine enable:)
+		((ScriptID GAME_INIT 1) doit:)	;set up the colors and sound again, in case the drivers were changed
+		(DisposeScript GAME_INIT)		;then trash the script
 		(SetMenu soundI p_text
 			(if (DoSound SoundOn) {Sound off} else {Sound on})
 		)
