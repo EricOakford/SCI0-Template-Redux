@@ -471,7 +471,6 @@
 
 	(method (startRoom roomNum)
 		((ScriptID DISPOSE_CODE 0) doit:)
-		(cls)
 		(if debugging
 			(if
 				(and
