@@ -49,7 +49,8 @@
 		)
 
 		(AddMenu { Speed }
-			{Change...`^s:--!:Faster`+:Normal`=:Slower`-}
+			{Change...`^s:--!:Faster`+:Normal`=:Slower`-:--!
+			:Detail Level`#6}
 		)
 
 		(AddMenu { Sound }
@@ -74,7 +75,7 @@
 	)
 
 
-	(method (handleEvent event &tmp i oldPause [str 250])
+	(method (handleEvent event &tmp i oldPause but1 but2 but3 but4 [str 250])
 		(switch (super handleEvent: event)
 
 
@@ -211,6 +212,38 @@
 				(theGame setSpeed: (++ speed))
 			)
 
+			(detailI
+				(= but1 {Low})
+				(= but2 {Medium})
+				(= but3 {High})
+				(= but4 {Ultra})
+				(switch dftHowFast
+					(slow
+						(= but1 {Optimal})
+					)
+					(medium
+						(= but2 {Optimal})
+					)
+					(fast
+						(= but3 {Optimal})
+					)
+					(fastest
+						(= but4 {Optimal})
+					)
+				)
+				(= howFast
+					(Print ""
+						#title:	{Game Detail Level}
+						#button but1 slow
+						#button but2 medium
+						#button but3 fast
+						#button but4 fastest
+					)
+				)
+				(if debugging
+					(Printf {howFast is now %d. dftHowFast is %d.} howFast dftHowFast)
+				)
+			)
 
 			;**************		SOUND MENU		**************
 
