@@ -45,6 +45,8 @@
 	InitFeatures 17
 	MouseClaimed 18
 	Face 19
+	InRoom 20
+	PutInRoom 21
 )
 
 (local
@@ -334,6 +336,25 @@
 				(actor1 y?)
 			)
 		)
+	)
+)
+
+(procedure (InRoom what where)
+	;check whether an inventory object is in a room.
+	; If no room is specified, it assumes the current room.
+	(return
+		(==
+			((inventory at: what) owner?)
+			(if (< argc 2) curRoomNum else where)
+		)
+	)
+)
+
+(procedure (PutInRoom what where)
+	;put an inventory object in a room.
+	; If no room is specified, it assumes the current room.	
+	((inventory at: what)
+		owner: (if (< argc 2) curRoomNum else where)
 	)
 )
 
