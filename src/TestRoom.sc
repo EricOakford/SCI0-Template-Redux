@@ -43,7 +43,7 @@
 				(cond
 					((Said 'look>')
 						(cond
-							((Said '[/!*,room]')
+							((Said '[/noword,room]')
 								(Print "This is an empty room.")
 							)
 						)

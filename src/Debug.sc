@@ -14,8 +14,6 @@
 )
 
 (instance debugRm of Locale
-	(properties)
-	
 	(method (init)
 		(super init:)
 		(mouseDownHandler add: self)

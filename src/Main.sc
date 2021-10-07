@@ -371,7 +371,6 @@
 (instance egoGL of GradualLooper)
 
 (instance egoBase of Code
-	
 	(method (doit theActor &tmp theX theY)
 		(= theX (theActor x?))
 		(= theY (+ 1 (theActor y?)))
@@ -385,7 +384,6 @@
 )
 
 (instance statusCode of Code
-	
 	(method (doit strg)
 		(Format strg "___Template Game_______________Score: %d of %d" score possibleScore)
 	)
@@ -437,7 +435,7 @@
 		((= mouseDownHandler mouseH) add:)
 		(= useSortedFeatures TRUE)
 		(User alterEgo: ego)
-		(TheMenuBar init: draw: hide: state: FALSE)
+		(TheMenuBar init:)
 		(StatusLine code: statusCode disable:) ;hide the status line at startup
 		(if debugging
 			(self setCursor: normalCursor (HaveMouse) 300 170)
@@ -446,12 +444,10 @@
 			(self setCursor: normalCursor FALSE 350 200)
 		)
 		((= theMusic music)
-			number: sDeath
 			owner: self
 			init:
 		)
 		((= soundFx SFX)
-			number: sDeath
 			owner: self
 			init:
 		)
@@ -498,8 +494,7 @@
 				(and
 					;if memory is fragmented and debugging is on, bring up a warning and the internal debugger
 					(u> (MemoryInfo FreeHeap) (+ 20 (MemoryInfo LargestPtr)))
-					(Print
-						"Memory fragmented."
+					(Print "Memory fragmented."
 						#button {Debug} TRUE
 					)
 				)
@@ -547,15 +542,25 @@
 						(Print "(Game over.)" #at -1 152)
 						(= quit TRUE)
 					)
-					((Said 'look[<at]>') ;look at inventory items
-						(if (= i (inventory saidMe:))
-							(if (i ownedBy: ego)
-								(i showSelf:)
-								else (DontHave)
+					((Said 'look[<at]>')
+						(cond
+							;look at inventory items
+							((= i (inventory saidMe:))
+								(if (i ownedBy: ego)
+									(i showSelf:)
+								else
+									(DontHave)
+								)
 							)
-								;if not an inventory item
-						else 	;this will handle "look anyword"
-							(CantSee)
+							;other things to look at
+							((Said '/head')
+								(Print "There's nothing going on in your stupid little head.")
+							)
+							;this handles "look anyword"
+							(else
+								(CantSee)
+								(event claimed: TRUE)
+							)
 						)
 					)
 				)
