@@ -190,7 +190,6 @@
 	;normalizes ego's animation
 	(ego
 		setLoop: -1
-		looper: 0
 		setPri: -1
 		setMotion: 0
 		setCycle: egoWalk
@@ -362,6 +361,15 @@
 	(properties
 		name "ego"
 	)
+	
+	(method (handleEvent event)
+		(cond
+			((super handleEvent: event))
+			((MouseClaimed self event shiftDown)
+				(Print "Why, that's me!")
+			)
+		)
+	)
 )
 
 (instance egoW of Walk)
@@ -434,7 +442,9 @@
 		((= directionHandler dirH) add:)
 		((= mouseDownHandler mouseH) add:)
 		(= useSortedFeatures TRUE)
-		(User alterEgo: ego)
+		(User
+			alterEgo: ego
+		)
 		(TheMenuBar init:)
 		(StatusLine code: statusCode disable:) ;hide the status line at startup
 		(if debugging
@@ -519,12 +529,7 @@
 				(directionHandler handleEvent: event)
 			)
 			(mouseDown
-				(cond
-					((mouseDownHandler handleEvent: event))
-					((MouseClaimed ego event shiftDown)
-						(Print "Why, that's me!")
-					)
-				)
+				(mouseDownHandler handleEvent: event)
 			)
 			(mouseUp
 				(cast handleEvent: event)

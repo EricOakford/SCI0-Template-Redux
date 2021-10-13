@@ -16,7 +16,7 @@
 	disposeCode 0
 )
 
-(instance disposeCode of Code	
+(instance disposeCode of Code
 	(method (doit roomNum &tmp event)
 		(theGame setCursor: waitCursor TRUE)
 		

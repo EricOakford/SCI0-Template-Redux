@@ -36,17 +36,12 @@
 	)
 
 	(method (handleEvent event)
-		(super handleEvent: event)
-		(switch (event type?)
-			; handle Said's, etc...	
-			(saidEvent
+		(cond
+			((super handleEvent: event))
+			((Said 'look>')
 				(cond
-					((Said 'look>')
-						(cond
-							((Said '[/noword,room]')
-								(Print "This is an empty room.")
-							)
-						)
+					((Said '[/noword,room]')
+						(Print "This is an empty room.")
 					)
 				)
 			)

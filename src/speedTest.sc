@@ -86,7 +86,6 @@
 )
 
 (instance speedScript of Script
-	
 	(method (changeState newState &tmp nextRoom [str 20])
 		(switch (= state newState)
 			(0
@@ -102,7 +101,7 @@
 						"machineSpeed is %d\n
 						howFast is %d"
 						machineSpeed howFast
-					)					
+					)
 					(repeat
 						(= str NULL)
 						(= nextRoom

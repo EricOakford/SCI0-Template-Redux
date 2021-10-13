@@ -211,7 +211,6 @@
 			(slowerI
 				(theGame setSpeed: (++ speed))
 			)
-
 			(detailI
 				(= but1 {Low})
 				(= but2 {Medium})
