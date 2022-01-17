@@ -27,7 +27,8 @@
 (instance gameInitCode of Code
 	(method (doit)
 		(= debugging TRUE) ;Set to TRUE if you want to enable the debug features.
-		(= possibleScore 0)	;Set the maximum score here		
+		(= possibleScore 0)	;Set the maximum score here
+		(= useSortedFeatures TRUE)
 		(driverInit doit:)
 		(DoSound ChangeVolume volume)	;ensure that the initial volume is the default
 		(DisposeScript GAME_INIT)	;and finally, trash this script from memory
@@ -42,14 +43,12 @@
 		;initialize the number of colors the graphics driver supports	
 		(= numColors (Graph GDetect))
 		(cond
-			((<= numColors 8)
-				(= graphicsDriver CGA)
+			((<= numColors 8)	;is CGA
 				(= myTextColor vBLACK)
 				(= myBackColor vWHITE)
 				(= dftStyle HSHUTTER)
 			)
 			(else	;is EGA
-				(= graphicsDriver EGA)
 				(= myTextColor vBLACK)
 				(= myBackColor vWHITE)
 				(= dftStyle HSHUTTER)
@@ -61,14 +60,13 @@
 			back: myBackColor
 		)
 		;here for testing different drivers
-		(if debugging
-			(Printf
-				"numVoices is %d\n
-				numColors is %d\n
-				graphicsDriver value is %d"
-				numVoices numColors graphicsDriver
-			)
-		)
+;;;		(if debugging
+;;;			(Printf
+;;;				"numVoices is %d\n
+;;;				numColors is %d"
+;;;				numVoices numColors
+;;;			)
+;;;		)
 		(self dispose:)
 	)
 )
