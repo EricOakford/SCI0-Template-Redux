@@ -163,6 +163,7 @@
 	gameSeconds				;elapsed seconds
 	gameMinutes				;elapsed minutes
 	gameHours				;elapsed hours
+	currentEgoView	= vEgo	;ego's current view
 )
 
 (procedure (RedrawCast)
@@ -188,6 +189,7 @@
 (procedure (NormalEgo)
 	;normalizes ego's animation
 	(ego
+		view: currentEgoView
 		setLoop: -1
 		setPri: -1
 		setMotion: 0
